@@ -1,0 +1,544 @@
+@model List<FinalWebapp.Models.WorkoutPlan>
+@{
+    ViewData["Title"] = "Workout Plans";
+    Layout = "_Layout";
+}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>💪 Workout Plans Management</h1>
+        <a asp-action="CreateWorkoutPlan" class="btn-create">
+            <span class="icon">➕</span> Create New Plan
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            <span class="alert-icon">✓</span>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-error">
+            <span class="alert-icon">✕</span>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+                <div class="stat-label">Total Plans</div>
+                <div class="stat-value">@Model.Count</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-info">
+                <div class="stat-label">Beginner Plans</div>
+                <div class="stat-value">@Model.Count(w => w.Difficulty == "Beginner")</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🟡</div>
+            <div class="stat-info">
+                <div class="stat-label">Intermediate Plans</div>
+                <div class="stat-value">@Model.Count(w => w.Difficulty == "Intermediate")</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔴</div>
+            <div class="stat-info">
+                <div class="stat-label">Advanced Plans</div>
+                <div class="stat-value">@Model.Count(w => w.Difficulty == "Advanced")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Difficulty</th>
+                    <th>Frequency</th>
+                    <th>Duration</th>
+                    <th>Workouts</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var plan in Model)
+                {
+                    <tr>
+                        <td>@plan.WorkoutPlanId</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(plan.ImagePath))
+                            {
+                                <div class="plan-image">
+                                    <img src="@plan.ImagePath" alt="@plan.Name" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="plan-image no-image">
+                                    <span>📋</span>
+                                </div>
+                            }
+                        </td>
+                        <td class="plan-name">@plan.Name</td>
+                        <td class="description-cell">
+                            @if (!string.IsNullOrEmpty(plan.Description))
+                            {
+                                if (plan.Description.Length > 60)
+                                {
+                                    @(plan.Description.Substring(0, 60) + "...")
+                                }
+                                else
+                                {
+                                    @plan.Description
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">No description</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="difficulty-badge difficulty-@plan.Difficulty.ToLower()">
+                                @plan.Difficulty
+                            </span>
+                        </td>
+                        <td>
+                            <span class="frequency-badge">
+                                @plan.RecommendedDailyFrequency x/week
+                            </span>
+                        </td>
+                        <td>
+                            <span class="duration-badge">
+                                ⏱️ @plan.EstimatedDurationMinutes min
+                            </span>
+                        </td>
+                        <td>
+                            <span class="workout-count">
+                                @plan.UserWorkouts.Count workouts
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-action="EditWorkoutPlan" asp-route-id="@plan.WorkoutPlanId" class="btn-edit" title="Edit">
+                                    ✏️
+                                </a>
+                                <button onclick="confirmDelete(@plan.WorkoutPlanId, '@plan.Name')" class="btn-delete" title="Delete">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No Workout Plans Yet</h3>
+                <p>Create your first workout plan to get started!</p>
+                <a asp-action="CreateWorkoutPlan" class="btn-create-large">
+                    Create Workout Plan
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h2>⚠️ Confirm Deletion</h2>
+        <p>Are you sure you want to delete the workout plan:</p>
+        <p class="delete-item-name" id="deletePlanName"></p>
+        <p class="warning-text">
+            <strong>Warning:</strong> This will affect <span id="workoutCount"></span> user workout(s).
+        </p>
+        <div class="modal-actions">
+            <button onclick="closeDeleteModal()" class="btn-cancel">Cancel</button>
+            <form id="deleteForm" method="post" style="display: inline;">
+                <button type="submit" class="btn-confirm-delete">Delete Plan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .admin-header h1 {
+        color: #ffa726;
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+    }
+
+    .btn-create:hover {
+        background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(156, 39, 176, 0.4);
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-success {
+        background: rgba(94, 243, 140, 0.15);
+        border: 1px solid rgba(94, 243, 140, 0.3);
+        color: #5ef38c;
+    }
+
+    .alert-error {
+        background: rgba(244, 67, 54, 0.15);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        color: #f44336;
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-info {
+        flex: 1;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        color: #ffa726;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .table-container {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 1.5rem;
+        overflow-x: auto;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table th {
+        background: rgba(156, 39, 176, 0.2);
+        color: #ffa726;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid rgba(255, 167, 38, 0.3);
+    }
+
+    .admin-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        vertical-align: middle;
+    }
+
+    .admin-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .plan-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .plan-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .plan-image.no-image {
+        font-size: 2rem;
+    }
+
+    .plan-name {
+        color: #ffa726;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .description-cell {
+        max-width: 300px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .difficulty-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .difficulty-beginner {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border: 1px solid rgba(76, 175, 80, 0.5);
+    }
+
+    .difficulty-intermediate {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.5);
+    }
+
+    .difficulty-advanced {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+        border: 1px solid rgba(244, 67, 54, 0.5);
+    }
+
+    .frequency-badge, .duration-badge, .workout-count {
+        padding: 0.4rem 0.8rem;
+        background: rgba(156, 39, 176, 0.2);
+        border: 1px solid rgba(156, 39, 176, 0.3);
+        border-radius: 8px;
+        color: #9c27b0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-edit, .btn-delete {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-edit {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196f3;
+    }
+
+    .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.3);
+        transform: scale(1.1);
+    }
+
+    .btn-delete {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+    }
+
+    .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.3);
+        transform: scale(1.1);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        color: #ffa726;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 2rem;
+    }
+
+    .btn-create-large {
+        background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .btn-create-large:hover {
+        background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+        transform: translateY(-2px);
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background: #1e1e1e;
+        border: 2px solid rgba(244, 67, 54, 0.5);
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .modal-content h2 {
+        color: #f44336;
+        margin-bottom: 1rem;
+    }
+
+    .delete-item-name {
+        color: #ffa726;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin: 1rem 0;
+    }
+
+    .warning-text {
+        background: rgba(244, 67, 54, 0.1);
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-confirm-delete {
+        flex: 1;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .text-muted {
+        color: rgba(255, 255, 255, 0.4);
+        font-style: italic;
+    }
+</style>
+
+<script>
+    function confirmDelete(planId, planName) {
+        document.getElementById('deletePlanName').textContent = planName;
+        document.getElementById('deleteForm').action = '/Admin/DeleteWorkoutPlan/' + planId;
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('show');
+    }
+</script>

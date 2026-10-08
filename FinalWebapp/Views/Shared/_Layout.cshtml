@@ -1,0 +1,529 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject FinalWebapp.Services.IUserService UserService
+@{
+    var currentUser = await UserService.GetCurrentUserAsync();
+    var isAuthenticated = UserService.IsAuthenticated();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Ascension Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #121212;
+            border-bottom: 1px solid #333;
+            z-index: 1000;
+        }
+
+        .logo {
+            color: #9c27b0;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .login-btn {
+            background-color: transparent;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-btn:hover {
+            background-color: #ffffff;
+            color: #121212;
+            text-decoration: none;
+        }
+
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            background: rgba(156, 39, 176, 0.2);
+            border-color: #9c27b0;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-weight: 500;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-dropdown.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1e1e1e;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .user-info {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dropdown-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details strong {
+            display: block;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .user-details small {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .dropdown-divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 0;
+        }
+
+        .user-stats {
+            padding: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            color: #9c27b0;
+            font-weight: 600;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(156, 39, 176, 0.2);
+            text-decoration: none;
+            color: white;
+        }
+
+        .logout-btn {
+            color: #f44336;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        /* Container styles */
+        .container {
+            flex: 1;
+            padding: 80px 20px 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Category navigation */
+        .category-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            scrollbar-width: none;
+            justify-content: center;
+        }
+
+        .category-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-pill {
+            white-space: nowrap;
+            padding: 8px 16px;
+            background-color: #333;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-pill.active {
+            background-color: #ffffff;
+            color: #121212;
+        }
+
+        .category-pill:hover:not(.active) {
+            background-color: #444;
+        }
+
+        /* Video grid styles */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background: #1e1e1e;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #2a2a2a;
+            overflow: hidden;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .play-icon {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 48px;
+        }
+
+        .duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .video-info {
+            padding: 12px;
+        }
+
+        .video-meta {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* Footer styles */
+        #footer {
+            background-color: #1a1a1a;
+            border-top: 1px solid #333;
+            padding: 0;
+            width: 100%;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .footer-toggle {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+        }
+
+        .footer-toggle-icon {
+            transform: rotate(180deg);
+            transition: transform 0.3s ease;
+            font-size: 18px;
+        }
+
+        #footer.footer-expanded .footer-toggle-icon {
+            transform: rotate(0deg);
+        }
+
+        .footer-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        #footer.footer-expanded .footer-content {
+            max-height: 200px;
+        }
+
+        .footer-columns {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-link {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        
+
+        .container {
+            padding: 70px 10px 80px 10px;
+        }
+
+        .category-nav {
+            justify-content: flex-start;
+        }
+
+        .footer-columns {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .dropdown-menu {
+            min-width: 250px;
+        }
+        
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a href="@Url.Action("Index", "Home")" class="logo">ASCENSION TRACKER</a>
+
+    @if (isAuthenticated && currentUser != null)
+    {
+        <!-- Logged in user - show profile dropdown -->
+        <div class="user-profile">
+            <div class="profile-dropdown">
+                <button class="profile-btn" onclick="toggleDropdown()">
+                    <img src="@(currentUser.ProfilePicture ?? "/images/default-avatar.png")" alt="Profile" class="profile-avatar">
+                    <span class="profile-name">@currentUser.Username</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="profileDropdown">
+                    <div class="user-info">
+                        <img src="@(currentUser.ProfilePicture ?? "/images/default-avatar.png")" alt="Profile" class="dropdown-avatar">
+                        <div class="user-details">
+                            <strong>@currentUser.Username</strong>
+                            <small>@currentUser.Email</small>
+                        </div>
+                    </div>
+                    <hr class="dropdown-divider">
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Points:</span>
+                            <span class="stat-value">@currentUser.TotalPoints</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Workouts:</span>
+                            <span class="stat-value">@currentUser.WorkoutCount</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Member Since:</span>
+                            <span class="stat-value">@currentUser.DateJoined.ToString("MMM yyyy")</span>
+                        </div>
+                        @if (currentUser.LastWorkoutDate != default(DateTime))
+                        {
+                            <div class="stat-item">
+                                <span class="stat-label">Last Workout:</span>
+                                <span class="stat-value">@currentUser.LastWorkoutDate.ToString("MMM dd")</span>
+                            </div>
+                        }
+                    </div>
+                    <hr class="dropdown-divider">
+                    <a href="@Url.Action("Profile", "Auth")" class="dropdown-item">View Full Profile</a>
+                    <form asp-action="Logout" asp-controller="Auth" method="post" style="margin: 0;">
+                        <button type="submit" class="dropdown-item logout-btn">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Not logged in - show login button -->
+        <a href="@Url.Action("Login", "Auth")" class="login-btn">LOGIN</a>
+    }
+</nav>
+
+<div class="container">
+    @RenderBody()
+</div>
+
+<footer id="footer">
+    <div class="footer-toggle" onclick="toggleFooter()">
+        <div class="footer-toggle-icon">^</div>
+    </div>
+    <div class="footer-content">
+        <div class="footer-columns">
+            <div class="footer-column">
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Support</a>
+                <a asp-area="" asp-controller="Home" asp-action="GymsCloseBy" class="footer-link">Find Gyms Near You</a>
+            </div>
+            <div class="footer-column">
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">TikTok</a>
+                <a href="#" class="footer-link">Promo Codes</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleFooter() {
+        document.getElementById('footer').classList.toggle('footer-expanded');
+    }
+
+    function toggleDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        const profileDropdown = dropdown.parentElement;
+
+        dropdown.classList.toggle('show');
+        profileDropdown.classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('profileDropdown');
+        const profileBtn = document.querySelector('.profile-btn');
+
+        if (dropdown && profileBtn && !profileBtn.contains(event.target)) {
+            dropdown.classList.remove('show');
+            dropdown.parentElement.classList.remove('open');
+        }
+    });
+
+    // Make category pills clickable
+    document.addEventListener('DOMContentLoaded', function() {
+        const pills = document.querySelectorAll('.category-pill');
+        if (pills.length > 0) {
+            pills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    pills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

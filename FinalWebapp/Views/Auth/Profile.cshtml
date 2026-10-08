@@ -1,0 +1,587 @@
+﻿@model FinalWebapp.Models.User
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "_Layout";
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-avatar-section">
+            <div class="profile-avatar-large">
+                <img id="profileImage" src="@(Model.ProfilePicture ?? "/images/default-avatar.png")" alt="Profile Picture">
+                <div class="avatar-overlay" onclick="triggerFileInput()">
+                    <span>📷</span>
+                    <span>Change Photo</span>
+                </div>
+            </div>
+            <form id="profilePictureForm" asp-action="UpdateProfilePicture" asp-controller="Auth" method="post" enctype="multipart/form-data" style="display: none;">
+                <input type="file" id="profilePictureInput" name="profilePicture" accept="image/*" onchange="previewAndUpload(this)" />
+            </form>
+        </div>
+        <div class="profile-info">
+            <h1>@Model.Username</h1>
+            <p class="profile-email">@Model.Email</p>
+            <p class="profile-joined">Member since @Model.DateJoined.ToString("MMMM yyyy")</p>
+            <div class="profile-badges">
+                @if (Model.TotalPoints >= 1000)
+                {
+                    <span class="badge badge-gold">🏆 Champion</span>
+                }
+                else if (Model.TotalPoints >= 500)
+                {
+                    <span class="badge badge-silver">🥈 Advanced</span>
+                }
+                else if (Model.TotalPoints >= 100)
+                {
+                    <span class="badge badge-bronze">🥉 Beginner</span>
+                }
+                else
+                {
+                    <span class="badge badge-starter">🌟 Starter</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-stats">
+        <div class="stat-card">
+            <div class="stat-icon">💪</div>
+            <div class="stat-number">@Model.TotalPoints</div>
+            <div class="stat-label">Total Points</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏋️</div>
+            <div class="stat-number">@Model.WorkoutCount</div>
+            <div class="stat-label">Workouts Completed</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏅</div>
+            <div class="stat-number">@Model.UserAchievements.Count</div>
+            <div class="stat-label">Achievements</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-number">@Model.UserMuscleRankings.Count</div>
+            <div class="stat-label">Muscle Rankings</div>
+        </div>
+    </div>
+
+    @if (Model.LastWorkoutDate != default(DateTime))
+    {
+        <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div class="activity-item">
+                <div class="activity-icon">🔥</div>
+                <div class="activity-details">
+                    <span class="activity-label">Last Workout:</span>
+                    <span class="activity-value">@Model.LastWorkoutDate.ToString("MMMM dd, yyyy")</span>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="profile-sections">
+        <div class="section">
+            <h3>Profile Settings</h3>
+            <div class="settings-grid">
+                <button class="setting-item" onclick="toggleEditMode()">
+                    <span class="setting-icon">✏️</span>
+                    <span>Edit Profile</span>
+                </button>
+                <button class="setting-item" onclick="showChangePassword()">
+                    <span class="setting-icon">🔒</span>
+                    <span>Change Password</span>
+                </button>
+                <button class="setting-item" onclick="showPrivacySettings()">
+                    <span class="setting-icon">🛡️</span>
+                    <span>Privacy Settings</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Quick Actions</h3>
+            <div class="actions-grid">
+                <a href="@Url.Action("MuscleMap", "Home")" class="action-btn primary">
+                    <span class="action-icon">🗺️</span>
+                    <span>View Muscle Map</span>
+                </a>
+                <a href="@Url.Action("YTpage", "Home")" class="action-btn secondary">
+                    <span class="action-icon">🎥</span>
+                    <span>Start Workout</span>
+                </a>
+                <a href="@Url.Action("Achievements", "Home")" class="action-btn secondary">
+                    <span class="action-icon">🏆</span>
+                    <span>View Achievements</span>
+                </a>
+                <a href="@Url.Action("Index", "Home")" class="action-btn secondary">
+                    <span class="action-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form (Hidden by default) -->
+    <div id="editProfileSection" class="edit-section" style="display: none;">
+        <h3>Edit Profile Information</h3>
+        <form asp-action="UpdateProfile" asp-controller="Auth" method="post" class="edit-form">
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <input type="text" id="Username" name="Username" value="@Model.Username" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" id="Email" name="Email" value="@Model.Email" class="form-control" />
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Save Changes</button>
+                <button type="button" class="btn-cancel" onclick="toggleEditMode()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" style="display: none;">
+        <div id="successMessage" class="message success" style="display: none;">
+            <span class="message-icon">✅</span>
+            <span class="message-text"></span>
+        </div>
+        <div id="errorMessage" class="message error" style="display: none;">
+            <span class="message-icon">❌</span>
+            <span class="message-text"></span>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #1e1e1e;
+    border-radius: 16px;
+    color: white;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar-section {
+    position: relative;
+}
+
+.profile-avatar-large {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #9c27b0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profile-avatar-large:hover {
+    border-color: #7b1fa2;
+    transform: scale(1.05);
+}
+
+.profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.profile-avatar-large:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-overlay span:first-child {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #9c27b0;
+}
+
+.profile-email {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-joined {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.profile-badges {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.badge-gold { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; }
+.badge-silver { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #000; }
+.badge-bronze { background: linear-gradient(135deg, #cd7f32, #daa520); color: #fff; }
+.badge-starter { background: linear-gradient(135deg, #9c27b0, #7b1fa2); color: #fff; }
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: rgba(156, 39, 176, 0.1);
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(156, 39, 176, 0.2);
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #9c27b0;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+}
+
+.recent-activity {
+    margin-bottom: 3rem;
+}
+
+.recent-activity h3 {
+    color: #9c27b0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.activity-icon {
+    font-size: 2rem;
+}
+
+.activity-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.activity-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.activity-value {
+    color: #9c27b0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.profile-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.section h3 {
+    color: #9c27b0;
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+}
+
+.settings-grid, .actions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.setting-item, .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.setting-item:hover, .action-btn:hover {
+    background: rgba(156, 39, 176, 0.2);
+    transform: translateX(5px);
+    text-decoration: none;
+    color: white;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.action-btn.primary:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+}
+
+.setting-icon, .action-icon {
+    font-size: 1.2rem;
+}
+
+.edit-section {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(156, 39, 176, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.edit-section h3 {
+    color: #9c27b0;
+    margin-bottom: 1.5rem;
+}
+
+.edit-form {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: #9c27b0;
+    font-weight: 600;
+}
+
+.form-control {
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-save, .btn-cancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    color: white;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.message.success {
+    background: rgba(76, 175, 80, 0.2);
+    border: 1px solid #4caf50;
+    color: #4caf50;
+}
+
+.message.error {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid #f44336;
+    color: #f44336;
+}
+
+
+    
+    .profile-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+
+</style>
+
+<script>
+function triggerFileInput() {
+    document.getElementById('profilePictureInput').click();
+}
+
+function previewAndUpload(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            document.getElementById('profileImage').src = e.target.result;
+        };
+        
+        reader.readAsDataURL(input.files[0]);
+        
+        // Auto-submit the form
+        document.getElementById('profilePictureForm').submit();
+    }
+}
+
+function toggleEditMode() {
+    const editSection = document.getElementById('editProfileSection');
+    editSection.style.display = editSection.style.display === 'none' ? 'block' : 'none';
+}
+
+function showChangePassword() {
+    alert('Change Password functionality - Coming Soon!');
+}
+
+function showPrivacySettings() {
+    alert('Privacy Settings functionality - Coming Soon!');
+}
+
+function showMessage(type, text) {
+    const container = document.getElementById('messageContainer');
+    const successMsg = document.getElementById('successMessage');
+    const errorMsg = document.getElementById('errorMessage');
+    
+    // Hide all messages first
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+    
+    // Show the appropriate message
+    if (type === 'success') {
+        successMsg.querySelector('.message-text').textContent = text;
+        successMsg.style.display = 'flex';
+    } else {
+        errorMsg.querySelector('.message-text').textContent = text;
+        errorMsg.style.display = 'flex';
+    }
+    
+    container.style.display = 'block';
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        container.style.display = 'none';
+    }, 5000);
+}
+
+// Check for success/error messages from server
+@if (TempData["SuccessMessage"] != null)
+{
+    <text>
+    document.addEventListener('DOMContentLoaded', function() {
+        showMessage('success', '@TempData["SuccessMessage"]');
+    });
+    </text>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <text>
+    document.addEventListener('DOMContentLoaded', function() {
+        showMessage('error', '@TempData["ErrorMessage"]');
+    });
+    </text>
+}
+</script>

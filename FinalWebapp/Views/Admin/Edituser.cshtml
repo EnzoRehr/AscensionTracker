@@ -1,0 +1,260 @@
+﻿@model FinalWebapp.Models.User
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_Layout";
+}
+
+<div class="admin-page">
+    <div class="page-header">
+        <div>
+            <a href="@Url.Action("Users", "Admin")" class="back-btn">← Back to Users</a>
+            <h1>✏️ Edit User: @Model.Username</h1>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <form asp-action="EditUser" asp-controller="Admin" method="post" class="admin-form">
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <input type="hidden" name="PasswordHash" value="@Model.PasswordHash" />
+            <input type="hidden" name="DateJoined" value="@Model.DateJoined" />
+            <input type="hidden" name="LastWorkoutDate" value="@Model.LastWorkoutDate" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="Username">
+                        <span class="label-icon">👤</span>
+                        Username
+                    </label>
+                    <input type="text" 
+                           id="Username" 
+                           name="Username" 
+                           class="form-control" 
+                           value="@Model.Username"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="Email">
+                        <span class="label-icon">📧</span>
+                        Email
+                    </label>
+                    <input type="email" 
+                           id="Email" 
+                           name="Email" 
+                           class="form-control" 
+                           value="@Model.Email"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label for="ProfilePicture">
+                        <span class="label-icon">🖼️</span>
+                        Profile Picture URL
+                    </label>
+                    <input type="text" 
+                           id="ProfilePicture" 
+                           name="ProfilePicture" 
+                           class="form-control" 
+                           value="@Model.ProfilePicture" />
+                </div>
+
+                <div class="form-group">
+                    <label for="TotalPoints">
+                        <span class="label-icon">💎</span>
+                        Total Points
+                    </label>
+                    <input type="number" 
+                           id="TotalPoints" 
+                           name="TotalPoints" 
+                           class="form-control" 
+                           value="@Model.TotalPoints"
+                           min="0" />
+                </div>
+
+                <div class="form-group">
+                    <label for="WorkoutCount">
+                        <span class="label-icon">🏋️</span>
+                        Workout Count
+                    </label>
+                    <input type="number" 
+                           id="WorkoutCount" 
+                           name="WorkoutCount" 
+                           class="form-control" 
+                           value="@Model.WorkoutCount"
+                           min="0" />
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <span class="label-icon">📅</span>
+                        Date Joined
+                    </label>
+                    <input type="text" 
+                           class="form-control" 
+                           value="@Model.DateJoined.ToString("MMM dd, yyyy")"
+                           disabled />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <span>💾</span>
+                    <span>Save Changes</span>
+                </button>
+                <a href="@Url.Action("Users", "Admin")" class="btn-cancel">
+                    <span>❌</span>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.admin-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #1e1e1e;
+    min-height: 100vh;
+    color: white;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.back-btn {
+    display: inline-block;
+    color: #9c27b0;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+    color: #7b1fa2;
+}
+
+.page-header h1 {
+    color: #ffa726;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.form-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    color: #ffa726;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.label-icon {
+    font-size: 1.2rem;
+}
+
+.form-control {
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.form-control:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-save, .btn-cancel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.btn-cancel:hover {
+    background: rgba(244, 67, 54, 0.3);
+    transform: translateY(-2px);
+}
+
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+</style>

@@ -1,0 +1,371 @@
+﻿@model FinalWebapp.Models.LeaderboardViewModel
+@{
+    ViewData["Title"] = "Global Rankings";
+}
+
+<div class="leaderboard-container">
+    <h1 class="leaderboard-title">🏆 GLOBAL RANKINGS</h1>
+
+    <p class="leaderboard-description">Top performers based on total points earned</p>
+
+    @if (Model.CurrentUserRanking != null)
+    {
+        <div class="your-position">
+            <h3>Your Position</h3>
+            <div class="position-card">
+                <span class="position-rank">#@Model.CurrentUserRanking.Rank</span>
+                <span class="position-username">@Model.CurrentUserRanking.Username</span>
+                <span class="position-points">@Model.CurrentUserRanking.TotalPoints pts</span>
+            </div>
+        </div>
+    }
+
+    <div class="leaderboard-table-container">
+        <table class="leaderboard-table">
+            <thead>
+            <tr>
+                <th>Rank</th>
+                <th>User</th>
+                <th>Total Points</th>
+                <th>Workouts</th>
+                <th>Progress</th>
+                <th>Joined</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (Model.TopUsers != null && Model.TopUsers.Any())
+            {
+                int rank = 1;
+                foreach (var user in Model.TopUsers)
+                {
+                    var isTopThree = rank <= 3;
+                    var maxPoints = Model.TopUsers.First().TotalPoints;
+                    var progressPercentage = maxPoints > 0 ? (int)((user.TotalPoints / (decimal)maxPoints) * 100) : 0;
+
+                    <tr class="@(isTopThree ? "top-rank" : "")">
+                        <td class="rank">
+                            @if (rank == 1)
+                            {
+                                <span class="rank-medal">🥇</span>
+                            }
+                            else if (rank == 2)
+                            {
+                                <span class="rank-medal">🥈</span>
+                            }
+                            else if (rank == 3)
+                            {
+                                <span class="rank-medal">🥉</span>
+                            }
+                            else
+                            {
+                                <span>@rank</span>
+                            }
+                        </td>
+                        <td class="user">
+                            <div class="user-info">
+                                <div class="avatar" style="background: linear-gradient(135deg, @GetAvatarColor(rank), @GetAvatarColorSecondary(rank))">
+                                    @user.Username.Substring(0, Math.Min(2, user.Username.Length)).ToUpper()
+                                </div>
+                                <span class="username">@user.Username</span>
+                            </div>
+                        </td>
+                        <td class="score">
+                            <span class="points-badge">💎 @user.TotalPoints</span>
+                        </td>
+                        <td class="workouts">
+                            <span class="workout-badge">🏋️ @user.WorkoutCount</span>
+                        </td>
+                        <td class="progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: @progressPercentage%;"></div>
+                            </div>
+                            <span class="progress-text">@progressPercentage%</span>
+                        </td>
+                        <td class="joined">
+                            @user.DateJoined.ToString("MMM dd, yyyy")
+                        </td>
+                    </tr>
+                    rank++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem;">
+                        <p style="font-size: 1.2rem; color: #888;">No users found. Be the first to join!</p>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalUsers > 10)
+    {
+        <div class="stats-footer">
+            <p>Showing top 10 of @Model.TotalUsers total users</p>
+        </div>
+    }
+</div>
+
+@functions {
+    string GetAvatarColor(int rank)
+    {
+        return rank switch
+        {
+            1 => "#FFD700",
+            2 => "#C0C0C0",
+            3 => "#CD7F32",
+            _ => "#9c27b0"
+        };
+    }
+
+    string GetAvatarColorSecondary(int rank)
+    {
+        return rank switch
+        {
+            1 => "#FFA500",
+            2 => "#A8A8A8",
+            3 => "#B87333",
+            _ => "#7b1fa2"
+        };
+    }
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 100%);
+        color: white;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .leaderboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+
+    .leaderboard-title {
+        color: #ffa726;
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-shadow: 0 0 20px rgba(255, 167, 38, 0.5);
+    }
+
+    .leaderboard-description {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 3rem;
+        font-size: 1.2rem;
+    }
+
+    .your-position {
+        background: linear-gradient(135deg, rgba(156, 39, 176, 0.2), rgba(255, 167, 38, 0.2));
+        border: 2px solid rgba(255, 167, 38, 0.5);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .your-position h3 {
+        color: #ffa726;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .position-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .position-rank {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffa726;
+    }
+
+    .position-username {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .position-points {
+        font-size: 1.3rem;
+        color: #9c27b0;
+        font-weight: bold;
+    }
+
+    .leaderboard-table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leaderboard-table th {
+        background: rgba(156, 39, 176, 0.3);
+        color: #ffa726;
+        padding: 1.5rem 1rem;
+        text-align: left;
+        border-bottom: 2px solid rgba(255, 167, 38, 0.5);
+        font-weight: 600;
+        letter-spacing: 1px;
+        font-size: 1rem;
+        text-transform: uppercase;
+    }
+
+    .leaderboard-table td {
+        padding: 1.5rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        vertical-align: middle;
+    }
+
+    .leaderboard-table tbody tr {
+        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.3s ease;
+    }
+
+    .leaderboard-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(1.01);
+    }
+
+    .top-rank {
+        background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(156, 39, 176, 0.1)) !important;
+        border-left: 4px solid #ffa726;
+    }
+
+    .rank {
+        font-weight: bold;
+        font-size: 1.3rem;
+        color: #ffa726;
+        text-align: center;
+    }
+
+    .rank-medal {
+        font-size: 2rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .username {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .points-badge, .workout-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .points-badge {
+        background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        color: white;
+        font-size: 1.1rem;
+    }
+
+    .workout-badge {
+        background: rgba(255, 167, 38, 0.2);
+        color: #ffa726;
+        border: 1px solid rgba(255, 167, 38, 0.5);
+    }
+
+    .progress {
+        position: relative;
+    }
+
+    .progress-bar {
+        height: 12px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        width: 100%;
+        margin-bottom: 0.3rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #9c27b0, #ffa726);
+        border-radius: 6px;
+        transition: width 0.5s ease;
+    }
+
+    .progress-text {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .joined {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.95rem;
+    }
+
+    .stats-footer {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+    }
+
+    
+    .leaderboard-table {
+        font-size: 0.9rem;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 1rem 0.5rem;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .leaderboard-title {
+        font-size: 2rem;
+    }
+
+    .position-card {
+        gap: 1rem;
+    }
+    
+</style>

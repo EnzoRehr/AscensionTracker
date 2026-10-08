@@ -1,0 +1,323 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="admin-dashboard">
+    <div class="admin-header">
+        <div class="header-content">
+            <h1>🛡️ Admin Dashboard</h1>
+            <p>Manage your fitness application</p>
+        </div>
+        <div class="header-actions">
+            <a href="@Url.Action("Index", "Home")" class="btn-secondary">
+                <span>🏠</span>
+                <span>Back to Site</span>
+            </a>
+            <a href="@Url.Action("Logout", "Admin")" class="btn-danger">
+                <span>🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                👥
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.Stats.TotalUsers</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                🏋️
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.Stats.TotalExercises</h3>
+                <p>Exercises</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                💪
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.Stats.TotalWorkouts</h3>
+                <p>Total Workouts</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                🏆
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.Stats.TotalAchievements</h3>
+                <p>Achievements</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                🎯
+            </div>
+            <div class="stat-info">
+                <h3>@ViewBag.Stats.TotalMuscleGroups</h3>
+                <p>Muscle Groups</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Sections -->
+    <div class="management-grid">
+        <a href="@Url.Action("Users", "Admin")" class="management-card">
+            <div class="card-icon">👥</div>
+            <h3>Users Management</h3>
+            <p>View, edit, and manage user accounts</p>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="@Url.Action("Exercises", "Admin")" class="management-card">
+            <div class="card-icon">🏋️</div>
+            <h3>Exercises</h3>
+            <p>Manage exercise database</p>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="@Url.Action("MuscleGroups", "Admin")" class="management-card">
+            <div class="card-icon">💪</div>
+            <h3>Muscle Groups</h3>
+            <p>Manage muscle group categories</p>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="@Url.Action("Achievements", "Admin")" class="management-card">
+            <div class="card-icon">🏆</div>
+            <h3>Achievements</h3>
+            <p>Manage achievement system</p>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="@Url.Action("AchievementCategories", "Admin")" class="management-card">
+            <div class="card-icon">📁</div>
+            <h3>Achievement Categories</h3>
+            <p>Manage achievement categories</p>
+            <div class="card-arrow">→</div>
+        </a>
+
+        <a href="@Url.Action("WorkoutPlans", "Admin")" class="management-card">
+            <div class="card-icon">💪</div>
+            <h3>Workout Plans</h3>
+            <p>Create and manage workout plans for users</p>
+            <div class="card-stat">
+                <span class="stat-number">@ViewBag.WorkoutPlansCount</span>
+                <span class="stat-label">Total Plans</span>
+            </div>
+        </a>
+       
+        
+    </div>
+</div>
+
+<style>
+.admin-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #1e1e1e;
+    min-height: 100vh;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-content h1 {
+    color: #ffa726;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.header-content p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-secondary, .btn-danger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #d32f2f, #c62828);
+    transform: translateY(-2px);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.stat-info h3 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.management-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.management-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #9c27b0, #ffa726);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.management-card:hover::before {
+    transform: scaleX(1);
+}
+
+.management-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.management-card h3 {
+    color: #ffa726;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.management-card p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+}
+
+.card-arrow {
+    color: #9c27b0;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.management-card:hover .card-arrow {
+    transform: translateX(10px);
+}
+
+
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-secondary, .btn-danger {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+
+</style>

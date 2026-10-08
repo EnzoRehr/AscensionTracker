@@ -1,0 +1,408 @@
+﻿@{
+    ViewData["Title"] = "By Muscle Group";
+}
+
+<div class="muscle-leaderboard-container">
+    <h1 class="leaderboard-title">BY MUSCLE GROUP</h1>
+    
+    <p class="leaderboard-description">Check who's leading in specific exercises and muscle groups.</p>
+    
+    <div class="leaderboard-filters">
+        <div class="filter-group">
+            <label for="muscleGroup">Muscle Group:</label>
+            <select id="muscleGroup" class="filter-select">
+                <option value="chest" selected>Chest</option>
+                <option value="back">Back</option>
+                <option value="shoulders">Shoulders</option>
+                <option value="arms">Arms</option>
+                <option value="legs">Legs</option>
+                <option value="core">Core</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="exercise">Exercise:</label>
+            <select id="exercise" class="filter-select">
+                <option value="all" selected>All Exercises</option>
+                <option value="benchPress">Bench Press</option>
+                <option value="inclineBenchPress">Incline Bench Press</option>
+                <option value="chestFlyes">Chest Flyes</option>
+                <option value="pushUps">Push-Ups</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="timeFrame">Time Frame:</label>
+            <select id="timeFrame" class="filter-select">
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="allTime">All Time</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Exercise selection cards -->
+    <div class="exercise-cards">
+        <div class="exercise-card selected">
+            <div class="exercise-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="2" rx="1" />
+                    <rect x="4" y="15" width="16" height="2" rx="1" />
+                    <rect x="6" y="3" width="2" height="18" rx="1" />
+                    <rect x="16" y="3" width="2" height="18" rx="1" />
+                </svg>
+            </div>
+            <span>Bench Press</span>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="2" rx="1" transform="rotate(15 2 5)" />
+                    <rect x="5" y="13" width="16" height="2" rx="1" transform="rotate(15 5 13)" />
+                    <rect x="6" y="1" width="2" height="18" rx="1" transform="rotate(15 6 1)" />
+                    <rect x="16" y="1" width="2" height="18" rx="1" transform="rotate(15 16 1)" />
+                </svg>
+            </div>
+            <span>Incline Bench</span>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 0 1 18 0" />
+                    <path d="M21 12a9 9 0 0 1-18 0" />
+                </svg>
+            </div>
+            <span>Cable Flyes</span>
+        </div>
+        <div class="exercise-card">
+            <div class="exercise-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="12" width="20" height="2" rx="1" />
+                    <path d="M6 14 v5 h12 v-5" />
+                    <path d="M6 12 v-2 a6 6 0 0 1 12 0 v2" />
+                </svg>
+            </div>
+            <span>Push-Ups</span>
+        </div>
+    </div>
+
+    <div class="leaderboard-table-container">
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>User</th>
+                    <th>Weight</th>
+                    <th>Reps</th>
+                    <th>1RM</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample data - would be dynamically populated from your database -->
+                <tr class="top-rank">
+                    <td class="rank">1</td>
+                    <td class="user">
+                        <div class="user-info">
+                            <div class="avatar" style="background-color: #8a2be2">JD</div>
+                            <span>JohnDoe92</span>
+                        </div>
+                    </td>
+                    <td class="weight">200 kg</td>
+                    <td class="reps">5</td>
+                    <td class="orm">230 kg</td>
+                    <td class="date">Mar 8, 2025</td>
+                </tr>
+                <tr class="top-rank">
+                    <td class="rank">2</td>
+                    <td class="user">
+                        <div class="user-info">
+                            <div class="avatar" style="background-color: #9932cc">SM</div>
+                            <span>StrengthMaster</span>
+                        </div>
+                    </td>
+                    <td class="weight">136 kg</td>
+                    <td class="reps">6</td>
+                    <td class="orm">157 kg</td>
+                    <td class="date">Mar 5, 2025</td>
+                </tr>
+                <tr class="top-rank">
+                    <td class="rank">3</td>
+                    <td class="user">
+                        <div class="user-info">
+                            <div class="avatar" style="background-color: #9370db">FC</div>
+                            <span>FitnessCrush</span>
+                        </div>
+                    </td>
+                    <td class="weight">124 kg</td>
+                    <td class="reps">8</td>
+                    <td class="orm">152 kg</td>
+                    <td class="date">Mar 10, 2025</td>
+                </tr>
+                <!-- Regular rankings -->
+                @for(int i = 4; i <= 10; i++) {
+                    <tr>
+                        <td class="rank">@i</td>
+                        <td class="user">
+                            <div class="user-info">
+                                <div class="avatar" style="background-color: #@(new Random().Next(0x800000, 0xffffff).ToString("X6"))">U@i</div>
+                                <span>User@(i*11)</span>
+                            </div>
+                        </td>
+                        <td class="weight">@(Math.Round((300 - (i * 10)) * 0.45359237, 1)) kg</td>
+                        <td class="reps">@(new int[] {5, 6, 8, 10, 12, 5, 6}[i % 7])</td>
+                        <td class="orm">@(Math.Round((335 - (i * 12)) * 0.45359237, 1)) kg</td>
+                        <td class="date">Mar @(i + 2), 2025</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <span class="page-ellipsis">...</span>
+        <button class="page-btn">Next</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Exercise cards selection
+        document.querySelectorAll('.exercise-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.exercise-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                // Placeholder for AJAX call to refresh leaderboard data
+                console.log('Selected exercise: ' + this.querySelector('span').textContent);
+            });
+        });
+        
+        // Muscle group filter change
+        document.getElementById('muscleGroup').addEventListener('change', function() {
+            // This would update the available exercises in the second dropdown
+            console.log('Muscle group changed to: ' + this.value);
+            
+            // Simulate updating exercise dropdown options
+            const exerciseSelect = document.getElementById('exercise');
+            exerciseSelect.innerHTML = '';
+            
+            // Add "All Exercises" option
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'All Exercises';
+            exerciseSelect.appendChild(allOption);
+            
+            // Add different options based on muscle group
+            if (this.value === 'chest') {
+                const exercises = ['Bench Press', 'Incline Bench Press', 'Chest Flyes', 'Push-Ups'];
+                const values = ['benchPress', 'inclineBenchPress', 'chestFlyes', 'pushUps'];
+                
+                exercises.forEach((exercise, index) => {
+                    const option = document.createElement('option');
+                    option.value = values[index];
+                    option.textContent = exercise;
+                    exerciseSelect.appendChild(option);
+                });
+            } else if (this.value === 'back') {
+                const exercises = ['Pull-Ups', 'Deadlift', 'Rows', 'Lat Pulldowns'];
+                const values = ['pullUps', 'deadlift', 'rows', 'latPulldowns'];
+                
+                exercises.forEach((exercise, index) => {
+                    const option = document.createElement('option');
+                    option.value = values[index];
+                    option.textContent = exercise;
+                    exerciseSelect.appendChild(option);
+                });
+            }
+            // Similarly for other muscle groups
+        });
+    </script>
+}
+
+<style>
+    /* Leaderboard-specific styles */
+    .muscle-leaderboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+    
+    .leaderboard-title {
+        color: #a64dff;
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+        letter-spacing: 2px;
+    }
+    
+    .leaderboard-description {
+        text-align: center;
+        color: #e0e0e0;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+    
+    .leaderboard-filters {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filter-select {
+        background-color: #2d2d2d;
+        color: white;
+        border: 1px solid #a64dff;
+        padding: 8px 12px;
+        border-radius: 5px;
+        outline: none;
+    }
+    
+    .filter-select:focus {
+        border-color: #bf80ff;
+        box-shadow: 0 0 0 2px rgba(166, 77, 255, 0.25);
+    }
+    
+    /* Exercise cards */
+    .exercise-cards {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        overflow-x: auto;
+        padding: 5px 0;
+    }
+    
+    .exercise-card {
+        background-color: #2d2d2d;
+        border-radius: 10px;
+        padding: 15px;
+        min-width: 110px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .exercise-card:hover {
+        background-color: #3d3d3d;
+    }
+    
+    .exercise-card.selected {
+        background-color: rgba(166, 77, 255, 0.2);
+        border: 1px solid #a64dff;
+    }
+    
+    .exercise-icon {
+        color: #a64dff;
+    }
+    
+    .exercise-card.selected .exercise-icon {
+        color: #bf80ff;
+    }
+    
+    .leaderboard-table-container {
+        overflow-x: auto;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .leaderboard-table th {
+        background-color: #222222;
+        color: #a64dff;
+        padding: 15px;
+        text-align: left;
+        border-bottom: 2px solid #a64dff;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    
+    .leaderboard-table td {
+        padding: 15px;
+        border-bottom: 1px solid #333333;
+    }
+    
+    .leaderboard-table tbody tr:nth-child(even) {
+        background-color: #1a1a1a;
+    }
+    
+    .leaderboard-table tbody tr:hover {
+        background-color: #2a2a2a;
+    }
+    
+    .top-rank {
+        background-color: rgba(166, 77, 255, 0.1) !important;
+    }
+    
+    .top-rank .rank {
+        color: #a64dff;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 20px;
+    }
+    
+    .page-btn {
+        background-color: #2d2d2d;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .page-btn.active {
+        background-color: #a64dff;
+    }
+    
+    .page-btn:hover:not(.active) {
+        background-color: #444444;
+    }
+    
+    .page-ellipsis {
+        color: white;
+        padding: 8px 5px;
+    }
+</style>

@@ -1,0 +1,495 @@
+@{
+    ViewData["Title"] = "Get Started";
+    Layout = "_Layout";
+}
+
+<div class="get-started-container">
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="assessment-card">
+        <div class="header">
+            <h1>🚀 Welcome to Your Fitness Journey!</h1>
+            <p>Let's assess your current strength level</p>
+        </div>
+
+        <form asp-action="SubmitGetStarted" asp-controller="Home" method="post" id="assessmentForm">
+            <!-- Step 1: Bench Press -->
+            <div class="question-step active" data-step="1">
+                <div class="question-icon">💪</div>
+                <h2>Bench Press Assessment</h2>
+                <p class="question-text">What is your maximum bench press weight that you can complete <strong>10 full reps</strong>?</p>
+                
+                <div class="input-group">
+                    <div class="weight-input-wrapper">
+                        <input type="number" 
+                               id="BenchPressWeight" 
+                               name="BenchPressWeight" 
+                               class="weight-input" 
+                               placeholder="0"
+                               min="0"
+                               step="0.5"
+                               required />
+                        <span class="unit">kg</span>
+                    </div>
+                    <small class="help-text">Enter 0 if you're just starting out</small>
+                </div>
+
+                <div class="rank-preview" id="benchRankPreview">
+                    <span class="preview-label">Your estimated rank:</span>
+                    <span class="rank-badge" id="benchRankBadge">Enter weight to see rank</span>
+                </div>
+
+                <button type="button" class="btn-next" onclick="nextStep()">
+                    Next Question →
+                </button>
+            </div>
+
+            <!-- Step 2: Biceps Curl -->
+            <div class="question-step" data-step="2">
+                <div class="question-icon">💪</div>
+                <h2>Biceps Curl Assessment</h2>
+                <p class="question-text">What is your maximum biceps curl weight that you can complete <strong>10 full reps</strong>?</p>
+                
+                <div class="input-group">
+                    <div class="weight-input-wrapper">
+                        <input type="number" 
+                               id="BicepsCurlWeight" 
+                               name="BicepsCurlWeight" 
+                               class="weight-input" 
+                               placeholder="0"
+                               min="0"
+                               step="0.5"
+                               required />
+                        <span class="unit">kg</span>
+                    </div>
+                    <small class="help-text">Enter 0 if you're just starting out</small>
+                </div>
+
+                <div class="rank-preview" id="bicepsRankPreview">
+                    <span class="preview-label">Your estimated rank:</span>
+                    <span class="rank-badge" id="bicepsRankBadge">Enter weight to see rank</span>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn-back" onclick="previousStep()">
+                        ← Back
+                    </button>
+                    <button type="submit" class="btn-submit">
+                        Complete Assessment 🎯
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Rank Information -->
+    <div class="rank-info-card">
+        <h3>🏅 Rank System</h3>
+        <div class="rank-list">
+            <div class="rank-item wood">
+                <span class="rank-icon">🪵</span>
+                <span class="rank-name">Wood</span>
+            </div>
+            <div class="rank-item bronze">
+                <span class="rank-icon">🥉</span>
+                <span class="rank-name">Bronze</span>
+            </div>
+            <div class="rank-item silver">
+                <span class="rank-icon">🥈</span>
+                <span class="rank-name">Silver</span>
+            </div>
+            <div class="rank-item gold">
+                <span class="rank-icon">🥇</span>
+                <span class="rank-name">Gold</span>
+            </div>
+            <div class="rank-item platinum">
+                <span class="rank-icon">💎</span>
+                <span class="rank-name">Platinum</span>
+            </div>
+            <div class="rank-item emerald">
+                <span class="rank-icon">💚</span>
+                <span class="rank-name">Emerald</span>
+            </div>
+            <div class="rank-item diamond">
+                <span class="rank-icon">💠</span>
+                <span class="rank-name">Diamond</span>
+            </div>
+            <div class="rank-item champion">
+                <span class="rank-icon">👑</span>
+                <span class="rank-name">Champion</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.get-started-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 100%);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.progress-bar {
+    width: 100%;
+    max-width: 600px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9c27b0, #ffa726);
+    border-radius: 10px;
+    width: 50%;
+    transition: width 0.5s ease;
+}
+
+.assessment-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.header h1 {
+    color: #ffa726;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+.question-step {
+    display: none;
+}
+
+.question-step.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.question-icon {
+    text-align: center;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.question-step h2 {
+    color: #9c27b0;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.question-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.input-group {
+    margin-bottom: 2rem;
+}
+
+.weight-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.weight-input {
+    width: 200px;
+    padding: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(156, 39, 176, 0.5);
+    border-radius: 15px;
+    color: white;
+    font-weight: bold;
+}
+
+.weight-input:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 4px rgba(156, 39, 176, 0.2);
+}
+
+.unit {
+    font-size: 1.5rem;
+    color: #ffa726;
+    font-weight: bold;
+}
+
+.help-text {
+    display: block;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.rank-preview {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(156, 39, 176, 0.1);
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.preview-label {
+    display: block;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.rank-badge {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.btn-next, .btn-submit, .btn-back {
+    width: 100%;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-next, .btn-submit {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    color: white;
+}
+
+.btn-next:hover, .btn-submit:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(156, 39, 176, 0.3);
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.rank-info-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.rank-info-card h3 {
+    color: #ffa726;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.rank-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.rank-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.rank-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rank-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.rank-name {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Rank Colors */
+.wood { border: 2px solid #8B4513; }
+.bronze { border: 2px solid #CD7F32; }
+.silver { border: 2px solid #C0C0C0; }
+.gold { border: 2px solid #FFD700; }
+.platinum { border: 2px solid #E5E4E2; }
+.emerald { border: 2px solid #50C878; }
+.diamond { border: 2px solid #B9F2FF; }
+.champion { border: 2px solid #FF0000; background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 69, 0, 0.2)); }
+
+
+    .assessment-card {
+        padding: 2rem;
+    }
+
+    .rank-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .weight-input {
+        width: 150px;
+        font-size: 1.5rem;
+    }
+
+</style>
+
+<script>
+let currentStep = 1;
+
+// Rank thresholds for Bench Press (Chest - ID: 17)
+const benchPressRanks = [
+    { rank: 'Wood', min: 0, max: 20, color: '#8B4513', icon: '🪵' },
+    { rank: 'Bronze', min: 20, max: 40, color: '#CD7F32', icon: '🥉' },
+    { rank: 'Silver', min: 40, max: 60, color: '#C0C0C0', icon: '🥈' },
+    { rank: 'Gold', min: 60, max: 80, color: '#FFD700', icon: '🥇' },
+    { rank: 'Platinum', min: 80, max: 100, color: '#E5E4E2', icon: '💎' },
+    { rank: 'Emerald', min: 100, max: 120, color: '#50C878', icon: '💚' },
+    { rank: 'Diamond', min: 120, max: 150, color: '#B9F2FF', icon: '💠' },
+    { rank: 'Champion', min: 150, max: 9999, color: '#FFD700', icon: '👑' }
+];
+
+// Rank thresholds for Biceps Curl (Biceps - ID: 18)
+const bicepsCurlRanks = [
+    { rank: 'Wood', min: 0, max: 8, color: '#8B4513', icon: '🪵' },
+    { rank: 'Bronze', min: 8, max: 15, color: '#CD7F32', icon: '🥉' },
+    { rank: 'Silver', min: 15, max: 22, color: '#C0C0C0', icon: '🥈' },
+    { rank: 'Gold', min: 22, max: 30, color: '#FFD700', icon: '🥇' },
+    { rank: 'Platinum', min: 30, max: 38, color: '#E5E4E2', icon: '💎' },
+    { rank: 'Emerald', min: 38, max: 46, color: '#50C878', icon: '💚' },
+    { rank: 'Diamond', min: 46, max: 55, color: '#B9F2FF', icon: '💠' },
+    { rank: 'Champion', min: 55, max: 9999, color: '#FFD700', icon: '👑' }
+];
+
+function getRank(weight, ranks) {
+    for (let i = 0; i < ranks.length; i++) {
+        if (weight >= ranks[i].min && weight < ranks[i].max) {
+            return ranks[i];
+        }
+    }
+    return ranks[0]; // Default to Wood
+}
+
+function updateRankPreview(inputId, previewId, badgeId, ranks) {
+    const input = document.getElementById(inputId);
+    const badge = document.getElementById(badgeId);
+    
+    input.addEventListener('input', function() {
+        const weight = parseFloat(this.value) || 0;
+        const rank = getRank(weight, ranks);
+        
+        badge.textContent = `${rank.icon} ${rank.rank}`;
+        badge.style.background = rank.color;
+        badge.style.color = rank.rank === 'Wood' || rank.rank === 'Bronze' ? 'white' : 'black';
+    });
+}
+
+function nextStep() {
+    const benchInput = document.getElementById('BenchPressWeight');
+    if (!benchInput.value || parseFloat(benchInput.value) < 0) {
+        alert('Please enter a valid weight for bench press');
+        return;
+    }
+
+    currentStep = 2;
+    updateStepDisplay();
+    updateProgress();
+}
+
+function previousStep() {
+    currentStep = 1;
+    updateStepDisplay();
+    updateProgress();
+}
+
+function updateStepDisplay() {
+    document.querySelectorAll('.question-step').forEach(step => {
+        step.classList.remove('active');
+    });
+    document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+}
+
+function updateProgress() {
+    const progress = (currentStep / 2) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+}
+
+// Initialize rank previews
+document.addEventListener('DOMContentLoaded', function() {
+    updateRankPreview('BenchPressWeight', 'benchRankPreview', 'benchRankBadge', benchPressRanks);
+    updateRankPreview('BicepsCurlWeight', 'bicepsRankPreview', 'bicepsRankBadge', bicepsCurlRanks);
+});
+</script>

@@ -1,0 +1,231 @@
+@model FinalWebapp.Models.MuscleGroup
+@{
+    ViewData["Title"] = "Create Muscle Group";
+    Layout = "_Layout";
+}
+
+<div class="admin-page">
+    <div class="page-header">
+        <div>
+            <a href="@Url.Action("MuscleGroups", "Admin")" class="back-btn">← Back to Muscle Groups</a>
+            <h1>➕ Create New Muscle Group</h1>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <form asp-action="CreateMuscleGroup" asp-controller="Admin" method="post" class="admin-form">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="Name">
+                        <span class="label-icon">💪</span>
+                        Muscle Group Name
+                    </label>
+                    <input type="text" 
+                           id="Name" 
+                           name="Name" 
+                           class="form-control" 
+                           placeholder="e.g., Chest, Back, Legs"
+                           required 
+                           maxlength="100" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="Description">
+                        <span class="label-icon">📝</span>
+                        Description
+                    </label>
+                    <textarea id="Description" 
+                              name="Description" 
+                              class="form-control textarea" 
+                              placeholder="Describe the muscle group (optional)"
+                              maxlength="500"
+                              rows="4"></textarea>
+                    <small class="form-text">Max 500 characters</small>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="IconPath">
+                        <span class="label-icon">🖼️</span>
+                        Icon Path (Optional)
+                    </label>
+                    <input type="text" 
+                           id="IconPath" 
+                           name="IconPath" 
+                           class="form-control" 
+                           placeholder="/images/icons/chest.png"
+                           maxlength="255" />
+                    <small class="form-text">Path to icon image file</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">
+                    <span>💾</span>
+                    <span>Create Muscle Group</span>
+                </button>
+                <a href="@Url.Action("MuscleGroups", "Admin")" class="btn-cancel">
+                    <span>❌</span>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.admin-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #1e1e1e;
+    min-height: 100vh;
+    color: white;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.back-btn {
+    display: inline-block;
+    color: #9c27b0;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover {
+    color: #7b1fa2;
+}
+
+.page-header h1 {
+    color: #ffa726;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.form-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #ffa726;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.label-icon {
+    font-size: 1.2rem;
+}
+
+.form-control {
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control.textarea {
+    resize: vertical;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-save, .btn-cancel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+    transform: translateY(-2px);
+}
+
+.btn-cancel {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.btn-cancel:hover {
+    background: rgba(244, 67, 54, 0.3);
+    transform: translateY(-2px);
+}
+
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+</style>

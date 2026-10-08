@@ -1,0 +1,527 @@
+@model FinalWebapp.Models.StartWorkoutViewModel
+@{
+    ViewData["Title"] = "Start Workout";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Workout</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffa726;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .workout-mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .mode-btn {
+            padding: 1.5rem 3rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mode-btn:hover, .mode-btn.active {
+            border-color: #9c27b0;
+            background: rgba(156, 39, 176, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .mode-btn h2 {
+            color: #ffa726;
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-btn p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .workout-content {
+            display: none;
+        }
+
+        .workout-content.active {
+            display: block;
+        }
+
+        /* Workout Plans Section */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: #9c27b0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(156, 39, 176, 0.3);
+        }
+
+        .plan-card.selected {
+            border-color: #5ef38c;
+            background: rgba(94, 243, 140, 0.1);
+        }
+
+        .plan-image {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .plan-image-placeholder {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-name {
+            color: #ffa726;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .plan-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .difficulty-beginner {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .difficulty-intermediate {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .difficulty-advanced {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .points-badge {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+        }
+
+        /* Custom Workout Section */
+        .custom-workout-form {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .exercise-entry {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .exercise-number {
+            color: #ffa726;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .remove-exercise-btn {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-exercise-btn:hover {
+            background: rgba(244, 67, 54, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: #ffa726;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-select, .form-input {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-select:focus, .form-input:focus {
+            outline: none;
+            border-color: #9c27b0;
+        }
+
+        .points-display {
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #5ef38c;
+            font-weight: bold;
+        }
+
+        .add-exercise-btn {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(156, 39, 176, 0.2);
+            border: 2px dashed rgba(156, 39, 176, 0.5);
+            color: #9c27b0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .add-exercise-btn:hover {
+            background: rgba(156, 39, 176, 0.3);
+            border-color: #9c27b0;
+        }
+
+        .total-points-display {
+            background: linear-gradient(135deg, rgba(94, 243, 140, 0.2), rgba(76, 175, 80, 0.2));
+            border: 2px solid #5ef38c;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .total-points-display h3 {
+            color: #5ef38c;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-points-value {
+            font-size: 3rem;
+            color: #5ef38c;
+            font-weight: bold;
+        }
+
+        .total-duration {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        .start-workout-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-workout-btn:hover {
+            background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(156, 39, 176, 0.4);
+        }
+
+        .start-workout-btn:disabled {
+            background: rgba(128, 128, 128, 0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+       
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .workout-mode-selector {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💪 Start Your Workout</h1>
+
+        <div class="workout-mode-selector">
+            <div class="mode-btn active" onclick="switchMode('plan')">
+                <h2>📋 Select Plan</h2>
+                <p>Choose from pre-made workout plans</p>
+            </div>
+            <div class="mode-btn" onclick="switchMode('custom')">
+                <h2>✏️ Custom Workout</h2>
+                <p>Build your own workout</p>
+            </div>
+        </div>
+
+        <!-- Workout Plans -->
+        <div id="planMode" class="workout-content active">
+            <form asp-action="StartPlanWorkout" asp-controller="Home" method="post">
+                <div class="plans-grid">
+                    @foreach (var plan in Model.WorkoutPlans)
+                    {
+                        var points = plan.Difficulty == "Beginner" ? 75 : (plan.Difficulty == "Intermediate" ? 100 : 125);
+                        
+                        <div class="plan-card" onclick="selectPlan(@plan.WorkoutPlanId)">
+                            <input type="radio" name="WorkoutPlanId" value="@plan.WorkoutPlanId" id="plan_@plan.WorkoutPlanId" style="display: none;">
+                            
+                            @if (!string.IsNullOrEmpty(plan.ImagePath))
+                            {
+                                <img src="@plan.ImagePath" alt="@plan.Name" class="plan-image" />
+                            }
+                            else
+                            {
+                                <div class="plan-image-placeholder">💪</div>
+                            }
+                            
+                            <div class="plan-name">@plan.Name</div>
+                            <div class="plan-description">@plan.Description</div>
+                            
+                            <div class="plan-details">
+                                <span class="detail-badge difficulty-@plan.Difficulty.ToLower()">
+                                    @plan.Difficulty
+                                </span>
+                                <span class="detail-badge" style="background: rgba(255, 167, 38, 0.2); color: #ffa726; border: 1px solid #ffa726;">
+                                    ⏱️ @plan.EstimatedDurationMinutes min
+                                </span>
+                                <span class="detail-badge" style="background: rgba(33, 150, 243, 0.2); color: #2196f3; border: 1px solid #2196f3;">
+                                    📅 @plan.RecommendedDailyFrequency x/week
+                                </span>
+                                <span class="detail-badge points-badge">
+                                    💎 @points points
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <button type="submit" class="start-workout-btn" style="margin-top: 2rem;" id="startPlanBtn" disabled>
+                    🚀 Start Selected Plan
+                </button>
+            </form>
+        </div>
+
+        <!-- Custom Workout -->
+        <div id="customMode" class="workout-content">
+            <form asp-action="StartCustomWorkout" asp-controller="Home" method="post" id="customWorkoutForm">
+                <div class="custom-workout-form">
+                    <div id="exercisesContainer">
+                        <!-- Exercise entries will be added here -->
+                    </div>
+                    
+                    <button type="button" class="add-exercise-btn" onclick="addExercise()">
+                        ➕ Add Exercise
+                    </button>
+                    
+                    <div class="total-points-display">
+                        <h3>Total Workout Points</h3>
+                        <div class="total-points-value" id="totalPoints">0</div>
+                        <div class="total-duration" id="totalDuration">Duration: 0 minutes</div>
+                    </div>
+                    
+                    <button type="submit" class="start-workout-btn" id="startCustomBtn" disabled>
+                        🚀 Start Custom Workout
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let exerciseCount = 0;
+        const exercises = @Html.Raw(Json.Serialize(Model.Exercises));
+
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.workout-content').forEach(content => content.classList.remove('active'));
+            
+            if (mode === 'plan') {
+                document.querySelector('.mode-btn:first-child').classList.add('active');
+                document.getElementById('planMode').classList.add('active');
+            } else {
+                document.querySelector('.mode-btn:last-child').classList.add('active');
+                document.getElementById('customMode').classList.add('active');
+            }
+        }
+
+        function selectPlan(planId) {
+            document.querySelectorAll('.plan-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById('plan_' + planId).checked = true;
+            document.getElementById('plan_' + planId).closest('.plan-card').classList.add('selected');
+            document.getElementById('startPlanBtn').disabled = false;
+        }
+
+        function addExercise() {
+            exerciseCount++;
+            const container = document.getElementById('exercisesContainer');
+            
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'exercise-entry';
+            exerciseDiv.id = 'exercise_' + exerciseCount;
+            exerciseDiv.innerHTML = `
+                <div class="exercise-header">
+                    <span class="exercise-number">Exercise #${exerciseCount}</span>
+                    <button type="button" class="remove-exercise-btn" onclick="removeExercise(${exerciseCount})">
+                        🗑️ Remove
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Exercise</label>
+                        <select class="form-select" name="Exercises[${exerciseCount-1}].ExerciseId" required onchange="calculateTotal()">
+                            <option value="">Select exercise...</option>
+                            ${exercises.map(ex => `<option value="${ex.exerciseId}">${ex.name} (${ex.muscleGroupName})</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sets</label>
+                        <input type="number" class="form-input" name="Exercises[${exerciseCount-1}].Sets" min="1" max="10" value="3" required onchange="calculateTotal()" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reps</label>
+                        <input type="number" class="form-input" name="Exercises[${exerciseCount-1}].Reps" min="1" max="50" value="10" required onchange="calculateTotal()" />
+                    </div>
+                </div>
+                <div class="points-display" id="points_${exerciseCount}">
+                    Points: 0 | Duration: 0 min
+                </div>
+            `;
+            
+            container.appendChild(exerciseDiv);
+            calculateTotal();
+        }
+
+        function removeExercise(id) {
+            document.getElementById('exercise_' + id).remove();
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let totalPoints = 0;
+            let totalSeconds = 0;
+            
+            document.querySelectorAll('.exercise-entry').forEach(entry => {
+                const sets = parseInt(entry.querySelector('[name*="Sets"]').value) || 0;
+                const reps = parseInt(entry.querySelector('[name*="Reps"]').value) || 0;
+                
+                const exercisePoints = sets * reps * 8;
+                const exerciseSeconds = sets * reps * 5;
+                
+                totalPoints += exercisePoints;
+                totalSeconds += exerciseSeconds;
+                
+                const pointsDisplay = entry.querySelector('.points-display');
+                pointsDisplay.textContent = `Points: ${exercisePoints} | Duration: ${Math.ceil(exerciseSeconds / 60)} min`;
+            });
+            
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('totalDuration').textContent = `Duration: ${Math.ceil(totalSeconds / 60)} minutes`;
+            
+            document.getElementById('startCustomBtn').disabled = exerciseCount === 0;
+        }
+
+        // Initialize with one exercise
+        window.onload = function() {
+            addExercise();
+        };
+    </script>
+</body>
+</html>

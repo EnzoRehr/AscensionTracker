@@ -1,0 +1,463 @@
+﻿@model FinalWebapp.Models.AchievementsViewModel
+@{
+    ViewData["Title"] = "Achievements";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Achievements</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ffa726;
+            text-shadow: 0 0 20px rgba(255, 167, 38, 0.5);
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .total-points-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.3), rgba(255, 167, 38, 0.3));
+            border: 2px solid rgba(255, 167, 38, 0.5);
+            border-radius: 16px;
+        }
+
+        .total-points-header .label {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .points-value {
+            font-size: 3rem;
+            color: #5ef38c;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(94, 243, 140, 0.5);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(156, 39, 176, 0.4);
+        }
+
+        .achievement-title {
+            color: #ffa726;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .achievement-description {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(156, 39, 176, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 167, 38, 0.6);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .badge-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: #ffa726;
+        }
+
+        .badge-points {
+            color: #5ef38c;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .badge-requirement {
+            font-size: 0.85rem;
+            color: #cccccc;
+            line-height: 1.3;
+        }
+
+        .badge.claimed {
+            border-color: rgba(94, 243, 140, 0.6);
+            background: rgba(94, 243, 140, 0.1);
+        }
+
+        .badge.claimed .badge-icon {
+            filter: brightness(1.3);
+        }
+
+        .claimed-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #5ef38c, #4caf50);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(94, 243, 140, 0.5);
+        }
+
+        .cooldown-timer {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.5);
+        }
+
+        .claim-button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .claim-button:hover {
+            background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+        }
+
+        .claim-button:disabled {
+            background: rgba(128, 128, 128, 0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #5ef38c, #4caf50);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(94, 243, 140, 0.5);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @@media (max-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .points-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🏆 ACHIEVEMENTS</h1>
+
+    <div class="intro">
+        Unlock special badges as you progress in your fitness journey. Earn points and showcase your dedication!
+    </div>
+
+    <div class="total-points-header">
+        <div class="label">Your Total Achievement Points</div>
+        <div class="points-value" id="totalPoints">@Model.UserTotalPoints</div>
+    </div>
+
+    <div class="achievements-grid">
+        @foreach (var category in Model.Categories)
+        {
+            <div class="achievement-card">
+                <div class="achievement-title">
+                    <span class="category-icon">@GetCategoryIcon(category.Name)</span>
+                    <span>@category.Name</span>
+                </div>
+                <div class="achievement-description">
+                    @category.Description
+                </div>
+
+                <div class="badges-grid">
+                    @foreach (var achievement in category.Achievements)
+                    {
+                        var userAchievement = Model.UserAchievements.FirstOrDefault(ua => ua.AchievementId == achievement.AchievementId);
+                        var isClaimed = userAchievement != null;
+                        var cooldownRemaining = 0;
+
+                        if (isClaimed && userAchievement.DateEarned.AddSeconds(30) > DateTime.UtcNow)
+                        {
+                            cooldownRemaining = (int)(userAchievement.DateEarned.AddSeconds(30) - DateTime.UtcNow).TotalSeconds;
+                        }
+
+                        <div class="badge @(isClaimed ? "claimed" : "")"
+                             data-achievement-id="@achievement.AchievementId"
+                             data-cooldown="@cooldownRemaining">
+
+                            @if (isClaimed && cooldownRemaining > 0)
+                            {
+                                <span class="cooldown-timer">⏰ @(cooldownRemaining)s</span>
+                            }
+                            else if (isClaimed)
+                            {
+                                <span class="claimed-badge">✓ Claimed</span>
+                            }
+
+                            <div class="badge-icon">@GetAchievementIcon(achievement.Name)</div>
+                            <div class="badge-name">@achievement.Name</div>
+                            <div class="badge-points">+@achievement.PointsAwarded points</div>
+                            <div class="badge-requirement">@achievement.Description</div>
+
+                            @if (cooldownRemaining > 0)
+                            {
+                                <button class="claim-button" disabled>Cooldown</button>
+                            }
+                            else if (isClaimed)
+                            {
+                                <button class="claim-button" onclick="claimAchievement(@achievement.AchievementId)">
+                                    Claim Again
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="claim-button" onclick="claimAchievement(@achievement.AchievementId)">
+                                    🎁 Claim
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function claimAchievement(achievementId) {
+        const badge = document.querySelector(`[data-achievement-id="${achievementId}"]`);
+        const button = badge.querySelector('.claim-button');
+
+        button.disabled = true;
+        button.textContent = 'Claiming...';
+        badge.classList.add('loading');
+
+        fetch('/Home/ClaimAchievement', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ achievementId: achievementId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                badge.classList.remove('loading');
+
+                if (data.success) {
+                    badge.classList.add('claimed');
+                    document.getElementById('totalPoints').textContent = data.newTotalPoints;
+                    showSuccessMessage(`🎉 +${data.pointsEarned} points! ${data.achievementName} claimed!`);
+                    startCooldown(badge, button, 30);
+
+                    const existingBadge = badge.querySelector('.claimed-badge, .cooldown-timer');
+                    if (!existingBadge) {
+                        const claimedBadge = document.createElement('span');
+                        claimedBadge.className = 'cooldown-timer';
+                        claimedBadge.textContent = '⏰ 30s';
+                        badge.appendChild(claimedBadge);
+                    }
+                } else {
+                    alert(data.message || 'Failed to claim achievement');
+                    button.disabled = false;
+                    button.textContent = '🎁 Claim';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                badge.classList.remove('loading');
+                button.disabled = false;
+                button.textContent = '🎁 Claim';
+                alert('An error occurred. Please try again.');
+            });
+    }
+
+    function startCooldown(badge, button, seconds) {
+        let remaining = seconds;
+        const timerElement = badge.querySelector('.cooldown-timer, .claimed-badge');
+
+        if (timerElement) timerElement.className = 'cooldown-timer';
+
+        button.disabled = true;
+        button.textContent = 'Cooldown';
+
+        const interval = setInterval(() => {
+            remaining--;
+            if (timerElement) timerElement.textContent = `⏰ ${remaining}s`;
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                if (timerElement) {
+                    timerElement.className = 'claimed-badge';
+                    timerElement.textContent = '✓ Claimed';
+                }
+                button.disabled = false;
+                button.textContent = 'Claim Again';
+            }
+        }, 1000);
+    }
+
+    function showSuccessMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'success-message';
+        messageDiv.textContent = message;
+        document.body.appendChild(messageDiv);
+        setTimeout(() => messageDiv.remove(), 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.badge[data-cooldown]').forEach(badge => {
+            const cooldown = parseInt(badge.getAttribute('data-cooldown'));
+            if (cooldown > 0) {
+                const button = badge.querySelector('.claim-button');
+                startCooldown(badge, button, cooldown);
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+@functions {
+    string GetCategoryIcon(string categoryName)
+    {
+        return categoryName.ToLower() switch
+        {
+            var name when name.Contains("strength") => "💪",
+            var name when name.Contains("endurance") || name.Contains("consistency") => "🔥",
+            var name when name.Contains("challenge") || name.Contains("special") => "⭐",
+            var name when name.Contains("milestone") => "🏆",
+            _ => "🎯"
+        };
+    }
+
+    string GetAchievementIcon(string achievementName)
+    {
+        return achievementName.ToLower() switch
+        {
+            var name when name.Contains("bicep") => "💪",
+            var name when name.Contains("bench") => "🏋️",
+            var name when name.Contains("squat") => "🦵",
+            var name when name.Contains("deadlift") => "🔥",
+            var name when name.Contains("week") || name.Contains("streak") => "🔥",
+            var name when name.Contains("month") => "📅",
+            var name when name.Contains("early") || name.Contains("bird") => "🌅",
+            var name when name.Contains("weekend") => "🏆",
+            var name when name.Contains("explorer") || name.Contains("gym") => "🧭",
+            var name when name.Contains("adventurer") || name.Contains("new") => "🌟",
+            var name when name.Contains("class") => "👥",
+            var name when name.Contains("night") || name.Contains("owl") => "🌙",
+            _ => "🎖️"
+        };
+    }
+}

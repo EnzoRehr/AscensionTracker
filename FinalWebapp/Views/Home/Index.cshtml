@@ -1,0 +1,345 @@
+﻿@model FinalWebapp.Models.HomeViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ascension Tracker</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* MAIN LAYOUT WITH WIDGET */
+        .main-layout {
+            display: flex;
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            padding-top: 80px;
+        }
+
+        .left-sidebar {
+            flex: 0 0 350px;
+            position: sticky;
+            top: 80px;
+            align-self: flex-start;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Section Styles */
+        section {
+            min-height: 70vh;
+            padding: 2rem 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dark-section {
+            background-color: #1e1e1e;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            padding: 3rem 2rem;
+        }
+
+        .purple-section {
+            background-color: #2a1b3d;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            padding: 3rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Cards for sections */
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h3 {
+            color: #9c27b0;
+            margin-bottom: 1rem;
+        }
+
+        /* Get Started Card Styles */
+        .get-started-card {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .get-started-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.4);
+        }
+
+        .get-started-card h3 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .get-started-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        /* Welcome Back Card Styles */
+        .welcome-back-card {
+            background: linear-gradient(135deg, #1a1a1a, #2d1b69);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid rgba(255, 167, 38, 0.5);
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .welcome-back-card h3 {
+            color: #ffa726;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-back-card p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .rank-display {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .rank-badge {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .update-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .update-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Responsive Design */
+     
+        .main-layout {
+            flex-direction: column;
+        }
+
+        .left-sidebar {
+            position: relative;
+            top: 0;
+            flex: 1;
+            max-height: none;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+        
+
+      
+        .main-layout {
+            padding: 1rem;
+            padding-top: 80px;
+        }
+
+        .rank-display {
+            flex-direction: column;
+        }
+
+        .grid {
+            grid-template-columns: 1fr;
+        }
+        
+    </style>
+</head>
+<body>
+<!-- MAIN LAYOUT WITH WIDGET -->
+<div class="main-layout">
+    <!-- LEFT SIDEBAR: ACTIVE WORKOUT WIDGET -->
+    <div class="left-sidebar">
+        @Html.Partial("~/Views/Shared/ActiveWorkoutWidget.cshtml", ViewBag.ActiveWorkout as FinalWebapp.Models.UserWorkout)
+    </div>
+
+    <!-- MAIN CONTENT: ALL YOUR SECTIONS -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <section id="hero" class="dark-section">
+            <h1 class="section-title">ASCENSION TRACKER</h1>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Track your progress. Reach new heights. Become legendary.</p>
+
+            @* CONDITIONAL GET STARTED SECTION *@
+            @if (Model != null && !Model.HasCompletedAssessment)
+            {
+                <div class="hero-cta">
+                    <a asp-controller="Home" asp-action="GetStarted" style="text-decoration: none; display: block; color: inherit;">
+                        <div class="card get-started-card">
+                            <h3>🚀 Get Started</h3>
+                            <p>Complete your initial strength assessment</p>
+                        </div>
+                    </a>
+                </div>
+            }
+            else if (Model != null && Model.HasCompletedAssessment)
+            {
+                <div class="hero-cta">
+                    <div class="card welcome-back-card">
+                        <h3>👋 Welcome Back!</h3>
+                        <p>Your current ranks:</p>
+                        <div class="rank-display">
+                            @if (!string.IsNullOrEmpty(Model.ChestRank))
+                            {
+                                <span class="rank-badge">💪 Chest: @Model.ChestRank</span>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.BicepsRank))
+                            {
+                                <span class="rank-badge">💪 Biceps: @Model.BicepsRank</span>
+                            }
+                        </div>
+                        <a asp-controller="Home" asp-action="GetStarted" class="update-link">Update Assessment</a>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <!-- Muscle Map Section -->
+        <section id="muscle-map" class="purple-section">
+            <h2 class="section-title">MUSCLE MAP</h2>
+            <div class="section-content">
+                <p style="text-align: center; margin-bottom: 2rem;">Login to access your personalized muscle map and track your progress across different muscle groups.</p>
+                <a asp-controller="Home" asp-action="MuscleMap" style="text-decoration: none; display: block; color: inherit;">
+                    <div class="card" style="cursor: pointer;">
+                        <h3>Track Your Strength</h3>
+                        <p>Enter your lifting weights for each muscle group and get ranked from Wood to Champion.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard" class="dark-section">
+            <h2 class="section-title">LEADERBOARD</h2>
+            <div class="section-content">
+                <p style="text-align: center; margin-bottom: 2rem;">See how you stack up against other users worldwide.</p>
+                <div class="grid">
+                    <a asp-controller="Home" asp-action="GlobalRanking" style="text-decoration: none; display: block; color: inherit;">
+                        <div class="card">
+                            <h3>Global Rankings</h3>
+                            <p>View the top performers across all muscle groups.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <a asp-controller="Home" asp-action="Achievements" style="text-decoration: none; display: block; color: inherit;">
+            <section id="achievements" class="purple-section">
+            
+            <h2 class="section-title">ACHIEVEMENTS</h2>
+                <div class="card">
+                    <h3 style="text-align: center;">Get rewards for challenging yourself</h3>
+                    <p>See how many achievements you can claim in your journey</p>
+                    <p>you can claim in your journey</p> 
+                </div>
+            </section>
+        </a>
+
+        <!-- Training Resources Section -->
+        <section id="resources" class="dark-section">
+            <h2 class="section-title">TRAINING RESOURCES</h2>
+            <div class="section-content">
+                <p style="text-align: center; margin-bottom: 2rem;">Access curated videos and guides for each muscle group.</p>
+                <div class="grid">
+                    <a asp-controller="Home" asp-action="YTpage" style="text-decoration: none; display: block; color: inherit;">
+                        <div class="card">
+                            <h3>Video Tutorials</h3>
+                            <p>Learn proper form and technique from experts.</p>
+                        </div>
+                    </a>
+                    <a asp-controller="Home" asp-action="StartWorkout" style="text-decoration: none; display: block; color: inherit;">
+                        <div class="card">
+                            <h3>Start your workout Now</h3>
+                            <p>Select an existing workout or create your own</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
